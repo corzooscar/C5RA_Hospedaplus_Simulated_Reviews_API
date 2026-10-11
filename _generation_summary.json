@@ -1,0 +1,108 @@
+{
+  "agencies": {
+    "ViajaFacil": {
+      "file": "output/agency_files/viajafacil_week.csv",
+      "rows": 13,
+      "layout": "B"
+    },
+    "SolyMar Tours": {
+      "file": "output/agency_files/solymar_tours_week.csv",
+      "rows": 13,
+      "layout": "A"
+    },
+    "EuroTrip Agency": {
+      "file": "output/agency_files/eurotrip_agency_week.csv",
+      "rows": 13,
+      "layout": "B"
+    },
+    "Andes Travel": {
+      "file": "output/agency_files/andes_travel_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "GlobalStay Agency": {
+      "file": "output/agency_files/globalstay_agency_week.csv",
+      "rows": 12,
+      "layout": "B"
+    },
+    "CaribeViajes": {
+      "file": "output/agency_files/caribeviajes_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "MontanaTours": {
+      "file": "output/agency_files/montanatours_week.csv",
+      "rows": 12,
+      "layout": "B"
+    },
+    "CostaBella Travel": {
+      "file": "output/agency_files/costabella_travel_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "NorteSur Agencia": {
+      "file": "output/agency_files/nortesur_agencia_week.csv",
+      "rows": 12,
+      "layout": "B"
+    },
+    "Horizonte Viajes": {
+      "file": "output/agency_files/horizonte_viajes_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "Rutas del Sur": {
+      "file": "output/agency_files/rutas_del_sur_week.csv",
+      "rows": 12,
+      "layout": "B"
+    },
+    "BlueSky Agency": {
+      "file": "output/agency_files/bluesky_agency_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "Destino Feliz": {
+      "file": "output/agency_files/destino_feliz_week.csv",
+      "rows": 12,
+      "layout": "B"
+    },
+    "Puerta del Sol Travel": {
+      "file": "output/agency_files/puerta_del_sol_travel_week.csv",
+      "rows": 12,
+      "layout": "A"
+    },
+    "Viajes Amanecer": {
+      "file": "output/agency_files/viajes_amanecer_week.csv",
+      "rows": 12,
+      "layout": "B"
+    }
+  },
+  "duplicates_created": [
+    {
+      "agency": "ViajaFacil",
+      "agency_booking_id": "AG01-00013",
+      "original_reservation_id": "res-10024",
+      "original_channel": "booking_channel_a",
+      "real_guest_name": "Diego Ferreira",
+      "agency_guest_name": "Diego F.",
+      "hotel_id": "hotel-022"
+    },
+    {
+      "agency": "SolyMar Tours",
+      "agency_booking_id": "AG02-00026",
+      "original_reservation_id": "res-10012",
+      "original_channel": "expedia",
+      "real_guest_name": "Patricia Rossi",
+      "agency_guest_name": "Rossi Patricia",
+      "hotel_id": "hotel-001"
+    },
+    {
+      "agency": "EuroTrip Agency",
+      "agency_booking_id": "AG03-00039",
+      "original_reservation_id": "res-10029",
+      "original_channel": "direct_ota",
+      "real_guest_name": "Elena Santos",
+      "agency_guest_name": "Santos Elena",
+      "hotel_id": "hotel-006"
+    }
+  ]
+}
