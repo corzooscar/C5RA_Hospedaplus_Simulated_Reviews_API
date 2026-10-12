@@ -29,13 +29,22 @@ def main():
                          help="Cuántas reservas de F2 se clonan como duplicados de agencia (AC2)")
     args = parser.parse_args()
 
+    f2_events_path = Path(args.f2_events)
     summary = generate_agency_files(
         output_dir=Path(args.output_dir),
-        f2_events_path=Path(args.f2_events),
+        f2_events_path=f2_events_path,
         seed=args.seed,
         bookings_per_agency=args.bookings_per_agency,
         duplicate_count=args.duplicate_count,
     )
+
+    if summary.get("warning"):
+        print("=" * 70)
+        print("ADVERTENCIA:", summary["warning"])
+        print(f"Ruta resuelta de --f2-events: {f2_events_path.resolve()}")
+        print("AC2 (reserva duplicada entre canales) NO se puede cumplir sin esto.")
+        print("=" * 70)
+        print()
 
     print(f"Generados {len(summary['agencies'])} archivos de agencia en {args.output_dir}")
     for agency, info in summary["agencies"].items():
