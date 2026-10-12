@@ -26,7 +26,12 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 
-from .reviews_data import Review, generate_reviews, PLATFORMS, LANGUAGES
+try:
+    from .reviews_data import Review, generate_reviews, PLATFORMS, LANGUAGES
+except ImportError:
+    # Permite correr tanto con "uvicorn app.main:app" (import relativo,
+    # paquete) como con "fastapi dev app/main.py" (import absoluto, script).
+    from reviews_data import Review, generate_reviews, PLATFORMS, LANGUAGES
 
 app = FastAPI(
     title="HospedaPlus - Simulated Reviews API (F5)",
@@ -71,20 +76,18 @@ def health():
     return {"status": "ok", "total_reviews": len(_REVIEWS)}
 
 
-@app.get("/reviews", response_model=PaginatedReviews)
-def list_reviews(
-    page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200),
-    hotel_id: Optional[str] = Query(None, description="Filtrar por hotel, p.ej. hotel-001"),
-    platform: Optional[str] = Query(None, description=f"Una de: {', '.join(PLATFORMS)}"),
-    language: Optional[str] = Query(None, description=f"Una de: {', '.join(LANGUAGES)}"),
-    only_duplicates: bool = Query(False, description="Si es true, devuelve solo las reseñas marcadas como duplicadas de otra"),
-):
+def _query_reviews(
+    page: int,
+    page_size: int,
+    hotel_id: Optional[str] = None,
+    platform: Optional[str] = None,
+    language: Optional[str] = None,
+    only_duplicates: bool = False,
+) -> PaginatedReviews:
     """
-    Lista reseñas de forma paginada. Soporta filtros simples por hotel,
-    plataforma e idioma, y un flag para aislar fácilmente los casos
-    duplicados entre plataformas (útil para probar AC1 sin tener que
-    escanear las 900 reseñas a mano).
+    Lógica de filtrado/paginación pura (sin decoradores de FastAPI), para
+    que pueda ser llamada tanto desde /reviews como desde el atajo
+    /hotels/{hotel_id}/reviews sin arrastrar objetos Query() sin resolver.
     """
     if platform and platform not in PLATFORMS:
         raise HTTPException(status_code=400, detail=f"platform debe ser una de: {PLATFORMS}")
@@ -116,8 +119,30 @@ def list_reviews(
     )
 
 
+@app.get("/reviews", response_model=PaginatedReviews)
+def list_reviews(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
+    hotel_id: Optional[str] = Query(None, description="Filtrar por hotel, p.ej. hotel-001"),
+    platform: Optional[str] = Query(None, description=f"Una de: {', '.join(PLATFORMS)}"),
+    language: Optional[str] = Query(None, description=f"Una de: {', '.join(LANGUAGES)}"),
+    only_duplicates: bool = Query(False, description="Si es true, devuelve solo las reseñas marcadas como duplicadas de otra"),
+):
+    """
+    Lista reseñas de forma paginada. Soporta filtros simples por hotel,
+    plataforma e idioma, y un flag para aislar fácilmente los casos
+    duplicados entre plataformas (útil para probar AC1 sin tener que
+    escanear las 900 reseñas a mano).
+    """
+    return _query_reviews(
+        page=page, page_size=page_size, hotel_id=hotel_id,
+        platform=platform, language=language, only_duplicates=only_duplicates,
+    )
+
+
 @app.get("/reviews/{review_id}", response_model=ReviewOut)
 def get_review(review_id: str):
+    """Atajo de conveniencia equivalente a /reviews?review_id=...  Ejemplo: rev-000123"""
     review = _REVIEWS_BY_ID.get(review_id)
     if review is None:
         raise HTTPException(status_code=404, detail="Review not found")
@@ -130,5 +155,5 @@ def list_reviews_by_hotel(
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
 ):
-    """Atajo de conveniencia equivalente a /reviews?hotel_id=..."""
-    return list_reviews(page=page, page_size=page_size, hotel_id=hotel_id)
+    """Atajo de conveniencia equivalente a /reviews?hotel_id=...  Ejemplo: hotel-001"""
+    return _query_reviews(page=page, page_size=page_size, hotel_id=hotel_id)
