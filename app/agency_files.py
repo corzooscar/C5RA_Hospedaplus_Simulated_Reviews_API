@@ -140,7 +140,21 @@ def generate_agency_files(
     f2_reservations = _load_f2_reservations(f2_events_path)
     duplicate_sources = rng.sample(f2_reservations, k=min(duplicate_count, len(f2_reservations)))
 
-    summary = {"agencies": {}, "duplicates_created": []}
+    # AC2 depende por completo de que haya al menos una reserva de F2 para
+    # clonar. Si el archivo de F2 no existe o está vacío, antes esto fallaba
+    # en silencio (se generaban los 15 CSV sin ningún duplicado, sin avisar
+    # nada). Ahora queda explícito en el propio resumen, para que un
+    # "duplicates_created: []" inesperado sea fácil de diagnosticar.
+    warning = None
+    if not f2_events_path.exists():
+        warning = f"El archivo de eventos F2 no existe: {f2_events_path}. Corre primero event_generator.py (HU-24)."
+    elif not f2_reservations:
+        warning = f"El archivo de eventos F2 existe pero no contiene eventos 'reservation.created': {f2_events_path}."
+    elif duplicate_count > len(f2_reservations):
+        warning = (f"Se pidieron {duplicate_count} duplicados pero solo hay {len(f2_reservations)} "
+                   f"reservas 'created' disponibles en F2; se generaron {len(duplicate_sources)}.")
+
+    summary = {"agencies": {}, "duplicates_created": [], "warning": warning}
     booking_counter = 0
 
     # columnas con nombres/orden levemente distintos por agencia, para
